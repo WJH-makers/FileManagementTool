@@ -1,14 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace WebApplication1.Views.Shared;
 
 public class FileOperationCommand
 {
     private readonly IFileOperationStrategy _strategy;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public FileOperationCommand(IFileOperationStrategy strategy)
+    public FileOperationCommand(IFileOperationStrategy strategy, IWebHostEnvironment webHostEnvironment = null)
     {
         _strategy = strategy;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     public async Task<FileOperationResult> Execute(List<IFormFile> files, string path)
@@ -29,6 +33,10 @@ public class FileOperationCommand
 
     private bool HasPermission(string path)
     {
-        return true;
+        if (string.IsNullOrWhiteSpace(path)) return false;
+        if (_webHostEnvironment == null) return true; // fallback: 无环境信息时放行
+        var fullPath = Path.GetFullPath(path);
+        var allowedBase = Path.GetFullPath(_webHostEnvironment.WebRootPath);
+        return fullPath.StartsWith(allowedBase, StringComparison.OrdinalIgnoreCase);
     }
 }

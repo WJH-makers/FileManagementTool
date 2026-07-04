@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // 配置 Kestrel 服务器选项
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
-    options.Limits.MaxRequestBodySize = 1000 * 1024 * 1024; // 设置最大请求体大小为 1GB
+    options.Limits.MaxRequestBodySize = 100 * 1024 * 1024; // 100MB
 });
 
 builder.Services.Configure<KestrelServerOptions>(options =>
@@ -45,7 +45,7 @@ void StartClamd()
 {
     try
     {
-        string clamdPath = "C:\\Program Files\\ClamAV\\clamd.exe";
+        string clamdPath = builder.Configuration.GetValue<string>("ClamAV:ClamdPath") ?? "C:\\Program Files\\ClamAV\\clamd.exe";
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = clamdPath,

@@ -39,12 +39,13 @@ public class ScanFileOperationStrategy : IFileOperationStrategy
                         await file.CopyToAsync(bufferedStream);
                     }
 
-                    if (ScanWithClamAV(path).Contains("OK"))
+                    var scanResult = ScanWithClamAV(path);
+                    if (scanResult.Contains("OK"))
                     {
                         infected_num += 1;
                     }
 
-                    clamdInfo += ScanWithClamAV(path);
+                    clamdInfo += scanResult;
 
                     if (System.IO.File.Exists(path))
                     {

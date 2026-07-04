@@ -7,8 +7,6 @@ using System.IO;
 public class ItemFactory
 {
     private static readonly ItemFactory instance = new ItemFactory();
-    private FileItem _fileItem;
-    private DirectoryItem _directoryItem;
     public static ItemFactory Instance => instance;
 
     public object CreateItem(string path)
@@ -20,21 +18,11 @@ public class ItemFactory
 
         if (File.Exists(path))
         {
-            if (_fileItem == null || _fileItem.Path != path)
-            {
-                _fileItem = new FileItem(path);
-            }
-
-            return _fileItem;
+            return new FileItem(path);
         }
         else if (Directory.Exists(path))
         {
-            if (_directoryItem == null || _directoryItem.Path != path)
-            {
-                _directoryItem = new DirectoryItem(path);
-            }
-
-            return _directoryItem;
+            return new DirectoryItem(path);
         }
         else
         {

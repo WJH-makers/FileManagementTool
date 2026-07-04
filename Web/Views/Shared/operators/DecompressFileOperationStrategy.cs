@@ -33,6 +33,25 @@ public class DecompressFileOperationStrategy : IFileOperationStrategy
                 await file.CopyToAsync(fileStream);
             }
 
+            // Zip slip 防护：提取前校验每个条目路径是否安全
+            using (var archive = ZipFile.OpenRead(filePath))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    var entryPath = Path.GetFullPath(Path.Combine(savePath, entry.FullName));
+                    if (!entryPath.StartsWith(Path.GetFullPath(savePath), StringComparison.OrdinalIgnoreCase))
+                    {
+                        System.IO.File.Delete(filePath);
+                        return new FileOperationResult
+                        {
+                            Success = false,
+                            Message = "Zip slip attack detected: " + entry.FullName,
+                            FolderInfo = string.Empty
+                        };
+                    }
+                }
+            }
+
             ZipFile.ExtractToDirectory(filePath, savePath);
             System.IO.File.Delete(filePath);
         }

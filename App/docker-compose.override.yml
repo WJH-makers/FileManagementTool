@@ -5,6 +5,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:80
+      # TODO: 生产环境应配置 HTTPS 并启用 TLS 终止。推荐使用反向代理（nginx / Traefik）处理 TLS。
       - PATH_BASE=/example
     ports:
       - "80:80"

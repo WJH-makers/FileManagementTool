@@ -124,47 +124,6 @@ function checkFileType() {
     }
 }
 
-async function callNLPApi(actionDescription) {
-    const url = "https://api.siliconflow.cn/v1/chat/completions";
-    const token = ""; // 请在环境变量或后端配置中设置 SiliconFlow API Key
-
-    const requestData = {
-        model: "deepseek-ai/DeepSeek-V2.5",
-        messages: [
-            {role: "user", content: actionDescription}
-        ],
-        stream: false,
-        max_tokens: 512,
-        stop: ["null"],
-        temperature: 0.8,
-        top_p: 0.8,
-        top_k: 75,
-        frequency_penalty: 0.5,
-        n: 2,
-        response_format: {type: "text"},
-    };
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-    };
-
-    try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-
-        if (response.ok) {
-            return data.choices && data.choices.length > 0 ? data.choices[0].message.content : null;
-        } else {
-            console.error('API Error:', data);
-            return null;
-        }
-    } catch (error) {
-        console.error('Network Error:', error);
-        return null;
-    }
-}
+// NLP API 调用请通过后端 Controller 代理（server-side），不要在前端暴露 API key
+// 如需使用，请在 HomeController 中新增端点调用第三方 API，前端改为 fetch('/Home/CallNLPApi', ...)
+// async function callNLPApi(actionDescription) { ... }
