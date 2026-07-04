@@ -1,123 +1,83 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:11998e,100:38ef7d&height=180&section=header&text=File%20Management%20Tool&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Dockerized%20ASP.NET%20Core%20File%20Manager%20with%20ClamAV&descAlignY=55&descAlign=50" width="100%" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:11998e,100:38ef7d&height=180&section=header&text=%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Docker%20%E5%8C%96%20ASP.NET%20Core%20%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%20%2B%20ClamAV&descAlignY=55&descAlign=50" width="100%" />
 </p>
 
-| Category | Stack |
-|----------|-------|
-| **Framework** | ASP.NET Core MVC, .NET 8.0 |
-| **Pattern** | Strategy Pattern |
-| **Infra** | Docker Compose, ClamAV |
-| **Frontend** | Razor Views, Bootstrap |
+| 类别 | 技术栈 |
+|------|--------|
+| **框架** | ASP.NET Core MVC, .NET 8.0 |
+| **架构** | 策略模式 |
+| **基础设施** | Docker Compose, ClamAV |
+| **前端** | Razor Views, Bootstrap |
 
-## 📋 Overview
+## 📋 简介
 
-A **Docker-based file management web app** built with **ASP.NET Core MVC** and **ClamAV antivirus**. Upload, scan, compress, decompress, and browse files through a clean web interface — all backed by a **Strategy Pattern** architecture for pluggable operations.
+基于 ASP.NET Core MVC 的 Docker 化文件管理 Web 应用。支持上传、扫描、压缩、解压、浏览文件，采用策略模式架构实现可插拔操作，集成 ClamAV 杀毒引擎。
 
-> **Why Strategy Pattern?** File operations (compress, scan, git push) share identical plumbing — select files, execute, report. The Strategy pattern decouples the operation logic from the controller, making it trivial to add new operations (encrypt, OCR, dedup) without touching existing code.
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- .NET 8.0 SDK
-- Docker Desktop
-- Visual Studio 2022+ (optional)
-
-### Run with Docker
+## 🚀 快速开始
 
 ```bash
-cd App
-docker-compose up -d
+# Docker 部署
+cd App && docker-compose up -d
+
+# 或本地运行
+dotnet restore && dotnet build
+cd Web && dotnet run
+# 访问 http://localhost:5000
 ```
 
-### Run without Docker
+## ✨ 功能特性
 
-```bash
-# Restore dependencies
-dotnet restore
+- **文件操作**：上传、下载、扫描、压缩、解压、清理
+- **病毒扫描**：ClamAV 实时杀毒
+- **策略模式**：可插拔操作架构，新增操作无需改控制器
+- **Docker 化**：完整容器化部署
+- **Git 集成**：直接上传文件到 GitHub 仓库
 
-# Build
-dotnet build
-
-# Run web application
-cd Web
-dotnet run
-```
-
-Navigate to `http://localhost:5000` to access the file manager.
-
-### API Endpoints
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/` | Home - file browser |
-| POST | `/Upload` | File upload |
-| POST | `/Scan` | Virus scan |
-| POST | `/Compress` | File compression |
-| POST | `/Decompress` | File decompression |
-| POST | `/GitLoad` | Upload to GitHub |
-
-## ✨ Key Features
-
-- **File Operations**: Upload, download, scan, compress, decompress, clean
-- **Antivirus Integration**: ClamAV real-time virus scanning
-- **Recursive Listing**: Browse directories with file metadata (size, permissions, icons)
-- **Strategy Pattern**: Pluggable file operation strategies
-- **Dockerized**: Full containerized deployment with docker-compose
-- **Git Integration**: Upload files directly to GitHub repositories
-
-## 🏗️ Architecture
+## 🏗️ 项目结构
 
 ```
 FileManagementTool/
-├── Web/                        # ASP.NET Core MVC web layer
-│   ├── Controllers/
-│   │   └── HomeController.cs   # File operation endpoints
-│   ├── Views/                  # Razor views (Index, FileUpload, etc.)
-│   ├── wwwroot/                # Static assets (CSS, JS, libs)
-│   ├── Program.cs              # Application entry (Kestrel, ClamAV, MVC)
-│   └── Web.csproj
-├── Item/                       # Domain model library
-│   ├── FileItem.cs             # File model (name, size, perms, icon)
-│   ├── DirectoryItem.cs        # Directory model (recursive listing)
-│   ├── DirectoryHelper.cs      # File system traversal
-│   └── ItemFactory.cs          # Factory pattern for items
-├── App/                        # Docker orchestration
-│   └── docker-compose.yml      # Multi-service definition
-├── Test/                       # Integration tests
+├── Web/                       # ASP.NET Core MVC 层
+│   ├── Controllers/           # 控制器
+│   ├── Views/                 # Razor 视图
+│   ├── wwwroot/               # 静态资源
+│   └── Program.cs
+├── Item/                      # 领域模型
+│   ├── FileItem.cs            # 文件模型
+│   ├── DirectoryItem.cs       # 目录模型
+│   └── DirectoryHelper.cs
+├── App/                       # Docker 编排
+│   └── docker-compose.yml
+├── Test/                      # 集成测试
 └── FileManagementTool.sln
 ```
 
-### Strategy Pattern
-
 ```
-┌─────────────────────────────────────────────────┐
-│            IFileOperationStrategy               │
-├─────────────────────────────────────────────────┤
-│  + ExecuteAsync(files, path): Task<Result>      │
-├─────────────────────────────────────────────────┤
-│         ▲           ▲           ▲               │
-├─────────┼───────────┼───────────┼───────────────┤
-│ Compress │  Decompress │   Scan    │  Git Load   │
-│ Strategy │  Strategy   │ Strategy  │  Strategy   │
-└──────────┴────────────┴───────────┴─────────────┘
+┌─────────────────────────────────────┐
+│       IFileOperationStrategy        │
+├─────────────────────────────────────┤
+│  + ExecuteAsync(files, path)        │
+├──────────┬──────────┬───────────────┤
+│  Compress │ Decompress│   Scan/Git   │
+│  Strategy │ Strategy  │   Strategies │
+└──────────┴──────────┴───────────────┘
 ```
 
-## ❓ FAQ
+## ❓ 常见问题
 
-| Question | Answer |
-|----------|--------|
-| **Do I need Docker?** | No, but recommended. Without Docker, ClamAV must be installed separately and the connection string adjusted in `appsettings.json`. |
-| **How do I add a new operation strategy?** | (1) Implement `IFileOperationStrategy` (2) Register in DI in `Program.cs` (3) Add controller endpoint + view. |
-| **Can I use this in production?** | This is a course project — add authentication, HTTPS, and input sanitization before production use. |
+| 问题 | 回答 |
+|------|------|
+| **需要 Docker 吗？** | 推荐使用，无 Docker 需单独安装 ClamAV 并调整配置 |
+| **如何添加新操作？** | 实现 `IFileOperationStrategy` → 注册 DI → 添加控制器接口和视图 |
+| **可用于生产？** | 课程项目，生产需加认证、HTTPS、输入过滤 |
 
-## 🔗 See Also
+## 🔗 相关项目
 
-- [FTP Client-Server](/WJH-makers/FTP) — Lower-level file transfer over TCP, complementary to this web-based file manager
+- [FTP](/WJH-makers/FTP) — 底层 TCP 文件传输，与本 Web 文件管理器互补
 
-## 🎓 Academic Context
+## 🎓 课程背景
 
-This project was completed as the final project for the **.NET Programming** course at **Wuhan University**, demonstrating ASP.NET Core MVC, Docker containerization, design patterns, and antivirus integration.
+武汉大学计算机学院 · .NET 程序设计课程设计。
 
 ---
 
