@@ -2,13 +2,12 @@
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:11998e,100:38ef7d&height=180&section=header&text=File%20Management%20Tool&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Dockerized%20ASP.NET%20Core%20File%20Manager%20with%20ClamAV&descAlignY=55&descAlign=50" width="100%" />
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/C%23-ASP.NET%20Core-512BD4?style=flat-square&logo=dotnet" />
-  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker" />
-  <img src="https://img.shields.io/badge/ClamAV-Antivirus-00A1E9?style=flat-square" />
-  <img src="https://img.shields.io/badge/Pattern-Strategy-FF6F00?style=flat-square" />
-  <img src="https://img.shields.io/badge/MVC-Architecture-green?style=flat-square" />
-</p>
+| Category | Stack |
+|----------|-------|
+| **Framework** | ASP.NET Core MVC, .NET 8.0 |
+| **Pattern** | Strategy Pattern |
+| **Infra** | Docker Compose, ClamAV |
+| **Frontend** | Razor Views, Bootstrap |
 
 ## 📋 Overview
 
@@ -103,6 +102,18 @@ FileManagementTool/
 │ Strategy │  Strategy   │ Strategy  │  Strategy   │
 └──────────┴────────────┴───────────┴─────────────┘
 ```
+
+## ❓ FAQ
+
+| Question | Answer |
+|----------|--------|
+| **Do I need Docker?** | No, but recommended. Without Docker, ClamAV must be installed separately and the connection string adjusted in `appsettings.json`. |
+| **How do I add a new operation strategy?** | (1) Implement `IFileOperationStrategy` (2) Register in DI in `Program.cs` (3) Add controller endpoint + view. |
+| **Can I use this in production?** | This is a course project — add authentication, HTTPS, and input sanitization before production use. |
+
+## 🔗 See Also
+
+- [FTP Client-Server](/WJH-makers/FTP) — Lower-level file transfer over TCP, complementary to this web-based file manager
 
 ## 🎓 Academic Context
 
