@@ -30,7 +30,8 @@ public class ScanFileOperationStrategy : IFileOperationStrategy
                 if (file.Length > 0)
                 {
                     string fileName = Path.GetFileName(file.FileName);
-                    string path = Path.Combine(basePath, fileName);
+                    string uniqueName = $"{Guid.NewGuid():N}_{fileName}";
+                    string path = Path.Combine(basePath, uniqueName);
                     Console.WriteLine(path);
                     using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None,
                                bufferSize: 8192))
@@ -40,7 +41,7 @@ public class ScanFileOperationStrategy : IFileOperationStrategy
                     }
 
                     var scanResult = ScanWithClamAV(path);
-                    if (scanResult.Contains("OK"))
+                    if (scanResult.Contains("FOUND"))
                     {
                         infected_num += 1;
                     }
@@ -72,13 +73,13 @@ public class ScanFileOperationStrategy : IFileOperationStrategy
             Message = "没有文件上传"
         };
     }
-    public string ScanWithClamAV(string Path)
+    public string ScanWithClamAV(string path)
     {
-        Console.WriteLine("扫描文件/文件夹路径: " + Path);
+        Console.WriteLine("扫描文件/文件夹路径: " + path);
         ProcessStartInfo processStartInfo = new ProcessStartInfo
         {
             FileName = "clamdscan",
-            Arguments = Path,
+            Arguments = path,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -89,18 +90,26 @@ public class ScanFileOperationStrategy : IFileOperationStrategy
         {
             using (Process process = Process.Start(processStartInfo))
             {
-                using (StreamReader reader = process.StandardOutput)
+                if (process.WaitForExit(30000))
                 {
-                    string output = reader.ReadToEnd();
-                    return output;
+                    using (StreamReader reader = process.StandardOutput)
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    process.Kill();
+                    clamdInfo += "Scan timed out after 30s\n";
+                    return "FOUND";
                 }
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"无法执行 clamdscan：{ex.Message}");
+            clamdInfo += $"ClamAV scan failed: {ex.Message}\n";
+            return "FOUND";
         }
-
-        return "";
     }
 }

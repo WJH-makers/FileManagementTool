@@ -24,7 +24,7 @@ public class CompressFileOperationStrategy : IFileOperationStrategy
 
         // 设置保存压缩包的路径
         var savePath =
-            Path.Combine(path, "compressed_files.zip");
+            Path.Combine(path, $"compressed_{Guid.NewGuid():N}.zip");
 
         using (var fileStream = new FileStream(savePath, FileMode.Create))
         {

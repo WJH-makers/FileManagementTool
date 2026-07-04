@@ -27,21 +27,19 @@ public class DecompressFileOperationStrategy : IFileOperationStrategy
 
         foreach (var file in files)
         {
-            var filePath = Path.Combine(savePath, file.FileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
+            // Read into memory first for validation
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+            ms.Position = 0;
 
-            // Zip slip 防护：提取前校验每个条目路径是否安全
-            using (var archive = ZipFile.OpenRead(filePath))
+            // Validate entries using memory stream
+            using (var archive = new ZipArchive(ms, ZipArchiveMode.Read, leaveOpen: true))
             {
                 foreach (var entry in archive.Entries)
                 {
                     var entryPath = Path.GetFullPath(Path.Combine(savePath, entry.FullName));
                     if (!entryPath.StartsWith(Path.GetFullPath(savePath), StringComparison.OrdinalIgnoreCase))
                     {
-                        System.IO.File.Delete(filePath);
                         return new FileOperationResult
                         {
                             Success = false,
@@ -50,6 +48,15 @@ public class DecompressFileOperationStrategy : IFileOperationStrategy
                         };
                     }
                 }
+            }
+
+            // Write to disk and extract
+            ms.Position = 0;
+            var uniqueName = $"{Guid.NewGuid():N}_{file.FileName}";
+            var filePath = Path.Combine(savePath, uniqueName);
+            using (var fs = new FileStream(filePath, FileMode.Create))
+            {
+                await ms.CopyToAsync(fs);
             }
 
             ZipFile.ExtractToDirectory(filePath, savePath);

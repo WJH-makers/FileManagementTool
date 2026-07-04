@@ -3,6 +3,7 @@
 @if (ViewData["ShowFileUpload"] != null && (bool)ViewData["ShowFileUpload"])
 {
     <form method="post" enctype="multipart/form-data" asp-action="UploadFile" onsubmit="handleClick(event)">
+        @Html.AntiForgeryToken()
         <div class="form-group">
             <label for="file" id="file">选择文件：</label>
             <input type="file" class="form-control" name="files" id="file" onchange="checkFileType()"/>

@@ -6,7 +6,12 @@ namespace WebApplication1.Views.Shared;
 
 public class CleanFileOperationStrategy : IFileOperationStrategy
 {
-    private readonly string folderPath = @"C:\\Users\\wjh19\\RiderProjects\\FileManagementTool\\Web\\wwwroot\\uploads\\cleaned";
+    private readonly string _basePath;
+
+    public CleanFileOperationStrategy(IWebHostEnvironment env)
+    {
+        _basePath = Path.Combine(env.WebRootPath, "uploads", "cleaned");
+    }
 
     public async Task<FileOperationResult> ExecuteAsync(List<IFormFile> files, string path)
     {
@@ -29,7 +34,8 @@ public class CleanFileOperationStrategy : IFileOperationStrategy
         {
             if (file.Length > 0)
             {
-                string originalFilePath = Path.Combine(folderPath, Path.GetFileName(file.FileName));
+                string uniqueName = $"{Guid.NewGuid():N}_{file.FileName}";
+                string originalFilePath = Path.Combine(_basePath, uniqueName);
                 using (var fileStream = new FileStream(originalFilePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);

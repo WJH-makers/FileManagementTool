@@ -23,20 +23,20 @@ namespace YourNamespace.Controllers
             this.webHostEnvironment = webHostEnvironment;
         }
 
-        private static readonly Dictionary<string, Func<IFileOperationStrategy>> OperationStrategies =
-            new Dictionary<string, Func<IFileOperationStrategy>>
+        private static readonly Dictionary<string, Func<IWebHostEnvironment, IFileOperationStrategy>> OperationStrategies =
+            new Dictionary<string, Func<IWebHostEnvironment, IFileOperationStrategy>>
             {
-                { "scan", () => new ScanFileOperationStrategy() },
-                { "clean", () => new CleanFileOperationStrategy() },
-                { "compress", () => new CompressFileOperationStrategy() },
-                { "decompress", () => new DecompressFileOperationStrategy() },
-                { "git_load", () => new GitLoadFileOperationStrategy() }
+                { "scan", _ => new ScanFileOperationStrategy() },
+                { "clean", env => new CleanFileOperationStrategy(env) },
+                { "compress", _ => new CompressFileOperationStrategy() },
+                { "decompress", _ => new DecompressFileOperationStrategy() },
+                { "git_load", _ => new GitLoadFileOperationStrategy() }
             };
-        public IFileOperationStrategy GetFileOperationStrategy(string currentAction)
+        public IFileOperationStrategy GetFileOperationStrategy(string currentAction, IWebHostEnvironment env)
         {
             if (OperationStrategies.TryGetValue(currentAction, out var strategyFactory))
             {
-                return strategyFactory();
+                return strategyFactory(env);
             }
             else
             {
@@ -45,8 +45,22 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFile(List<IFormFile> files, string currentAction, string pathHidden)
         {
+            if (files != null)
+            {
+                var allowedExtensions = new[] { ".txt", ".pdf", ".doc", ".docx", ".jpg", ".png", ".zip" };
+                foreach (var file in files)
+                {
+                    var ext = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+                    if (string.IsNullOrEmpty(ext) || !allowedExtensions.Contains(ext))
+                    {
+                        return BadRequest($"File type '{ext}' is not allowed.");
+                    }
+                }
+            }
+
             // 路径合法性校验：防止路径穿越
             if (string.IsNullOrWhiteSpace(pathHidden) || pathHidden.Contains(".."))
             {
@@ -59,7 +73,7 @@ namespace YourNamespace.Controllers
             }
 
             // 获取操作策略并执行操作
-            IFileOperationStrategy strategy = GetFileOperationStrategy(currentAction);
+            IFileOperationStrategy strategy = GetFileOperationStrategy(currentAction, webHostEnvironment);
             var command = new FileOperationCommand(strategy, webHostEnvironment);
             FileOperationResult result = await command.Execute(files, safePath);
             return Json(new 

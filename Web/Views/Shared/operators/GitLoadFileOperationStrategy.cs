@@ -14,6 +14,14 @@ public class GitLoadFileOperationStrategy : IFileOperationStrategy
     private async Task<FileOperationResult> git_loads(List<IFormFile> files)
     {
         var token = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? ""; // 从环境变量读取
+        if (string.IsNullOrEmpty(token))
+        {
+            return new FileOperationResult
+            {
+                Success = false,
+                Message = "GITHUB_TOKEN not configured"
+            };
+        }
         var repoOwner = "WJH-makers"; // 替换为你的 GitHub 用户名
         var repoName = "dotnet"; // 替换为你的仓库名
         var branch = "main"; // 使用仓库的默认分支，如 "main" 或 "master"
