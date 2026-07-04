@@ -126,7 +126,7 @@ function checkFileType() {
 
 async function callNLPApi(actionDescription) {
     const url = "https://api.siliconflow.cn/v1/chat/completions";
-    const token = "sk-zbgapvtxgkwfnojbwvzoqilqxincuntyglcozdbljnmkwwjn"; // Replace with your actual token
+    const token = ""; // 请在环境变量或后端配置中设置 SiliconFlow API Key
 
     const requestData = {
         model: "deepseek-ai/DeepSeek-V2.5",
