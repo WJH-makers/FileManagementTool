@@ -1,0 +1,51 @@
+﻿<link rel="stylesheet" href="~/css/FileUploadForm.css" asp-append-version="true"/>
+
+@if (ViewData["ShowFileUpload"] != null && (bool)ViewData["ShowFileUpload"])
+{
+    <form method="post" enctype="multipart/form-data" asp-action="UploadFile" onsubmit="handleClick(event)">
+        <div class="form-group">
+            <label for="file" id="file">选择文件：</label>
+            <input type="file" class="form-control" name="files" id="file" onchange="checkFileType()"/>
+        </div>
+        <div class="form-group">
+            <label for="folder" id="folder">选择文件夹：</label>
+            <input type="file" class="form-control" name="files" id="folder" multiple webkitdirectory
+                   onchange="checkFileType()"/>
+        </div>
+        <div id="warningMessage" class="alert alert-warning" style="display:none; margin-top: 10px;">
+            请选择文件或文件夹，但不能同时选择。
+        </div>
+        <input type="hidden" id="currentAction" name="currentAction" value="scan"/>
+        <div class="form-group">
+            <label for="path">选择路径：</label>
+            <input type="text" class="form-control" id="path" name="path" placeholder="输入路径"/>
+        </div>
+        <input type="hidden" id="pathHidden" name="pathHidden"/>
+        <div class="form-group">
+            <label for="actionInput">请输入操作描述：</label>
+            <input type="text" class="form-control" id="actionInput" name="actionInput"
+                   placeholder="描述操作"/>
+        </div>
+        <button id="mainButton" type="submit" class="btn btn-primary">查杀文件</button>
+        <button id="switchButton" type="button" class="btn btn-secondary" onclick="toggleAction()">切换功能</button>
+    </form>
+
+
+    <div class="container mt-4">
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5>API调用内容</h5>
+                <div id="apiContent">等待API调用结果...</div>
+            </div>
+            <div class="col-md-6">
+                <h5>本地操作内容</h5>
+                <div id="localContent">等待本地操作结果...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="js/FileUploadForm.js"></script>
+}
