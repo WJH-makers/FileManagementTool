@@ -12,7 +12,51 @@
 
 ## 📋 Overview
 
-A **Docker-based file management web application** built with **ASP.NET Core MVC**, featuring **ClamAV antivirus integration**. Supports file upload, virus scanning, compression/decompression, recursive directory listing, and Git integration — all through a clean web interface with a **Strategy Pattern** backend.
+A **Docker-based file management web app** built with **ASP.NET Core MVC** and **ClamAV antivirus**. Upload, scan, compress, decompress, and browse files through a clean web interface — all backed by a **Strategy Pattern** architecture for pluggable operations.
+
+> **Why Strategy Pattern?** File operations (compress, scan, git push) share identical plumbing — select files, execute, report. The Strategy pattern decouples the operation logic from the controller, making it trivial to add new operations (encrypt, OCR, dedup) without touching existing code.
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- .NET 8.0 SDK
+- Docker Desktop
+- Visual Studio 2022+ (optional)
+
+### Run with Docker
+
+```bash
+cd App
+docker-compose up -d
+```
+
+### Run without Docker
+
+```bash
+# Restore dependencies
+dotnet restore
+
+# Build
+dotnet build
+
+# Run web application
+cd Web
+dotnet run
+```
+
+Navigate to `http://localhost:5000` to access the file manager.
+
+### API Endpoints
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/` | Home - file browser |
+| POST | `/Upload` | File upload |
+| POST | `/Scan` | Virus scan |
+| POST | `/Compress` | File compression |
+| POST | `/Decompress` | File decompression |
+| POST | `/GitLoad` | Upload to GitHub |
 
 ## ✨ Key Features
 
@@ -59,48 +103,6 @@ FileManagementTool/
 │ Strategy │  Strategy   │ Strategy  │  Strategy   │
 └──────────┴────────────┴───────────┴─────────────┘
 ```
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- .NET 8.0 SDK
-- Docker Desktop
-- Visual Studio 2022+ (optional)
-
-### Run with Docker
-
-```bash
-cd App
-docker-compose up -d
-```
-
-### Run without Docker
-
-```bash
-# Restore dependencies
-dotnet restore
-
-# Build
-dotnet build
-
-# Run web application
-cd Web
-dotnet run
-```
-
-Navigate to `http://localhost:5000` to access the file manager.
-
-### API Endpoints
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/` | Home - file browser |
-| POST | `/Upload` | File upload |
-| POST | `/Scan` | Virus scan |
-| POST | `/Compress` | File compression |
-| POST | `/Decompress` | File decompression |
-| POST | `/GitLoad` | Upload to GitHub |
 
 ## 🎓 Academic Context
 
